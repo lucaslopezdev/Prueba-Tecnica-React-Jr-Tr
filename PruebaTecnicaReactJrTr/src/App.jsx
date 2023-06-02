@@ -1,35 +1,34 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect, useState } from "react";
 import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0);
+const App = () => {
+  const API_KEY = "iOYLkan8PQdFu17fqzFdolAN2FBPhlg8";
+  const [catFact, setCatFact] = useState("");
+  const [catGif, setCatGif] = useState("");
+
+  const callGiphyAPI = (str) => {
+    fetch(`http://api.giphy.com/v1/gifs/search?q=${str}&api_key=${API_KEY}`)
+      .then((response) => response.json())
+      .then((data) => setCatGif(data.data[0].images.original.url));
+  };
+
+  const callAPI = () => {
+    fetch("https://catfact.ninja/fact")
+      .then((response) => response.json())
+      .then((data) => {
+        setCatFact(data.fact);
+        callGiphyAPI(data.fact.split(" ", 3).join(" "));
+      });
+  };
+
+  useEffect(callAPI, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <img src={catGif} alt="" width="200px" height="200px" />
+      {catFact}
+    </div>
   );
-}
+};
 
 export default App;
